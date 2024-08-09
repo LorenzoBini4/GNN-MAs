@@ -12,8 +12,8 @@ import numpy as np
 import scipy
 # from sklearn.preprocessing import MinMaxScaler
 
-import matplotlib.pyplot as plt
 import matplotlib
+import matplotlib.pyplot as plt
 
 from operator import mul
 from functools import reduce
@@ -28,6 +28,11 @@ import numpy as np
 from scipy.optimize import minimize
 import matplotlib.pyplot as plt
 from scipy.special import gamma as gamma_func
+
+
+
+AREACOLOR = (235/255,97/255,35/255)
+LINECOLOR = (81/255,40/255,136/255)
 
 
 
@@ -122,8 +127,8 @@ def ks_ll_plot(data_raw, key, layer=0, xmin=None, bottom=0.1, fit=True, save=Tru
         for shape_i, shape in enumerate([(1.6*scale169,0.9*scale169)]):#, (6,4.5)]):
             fig, ax = plt.subplots(figsize=shape)
             ax.set_yscale('log')
-            ax.plot(dist_x, dist_pdf, color='C3')
-            ax.hist(data, bins=1000)#, density=True)
+            ax.hist(data, bins=1000, color=AREACOLOR)
+            ax.plot(dist_x, dist_pdf, color=LINECOLOR)
             ax.axvline(x=-3, color='#000000', linestyle='dashed', label='MA threshold')
             ax.set_ylim(bottom=bottom)
             ax.legend([
@@ -134,8 +139,9 @@ def ks_ll_plot(data_raw, key, layer=0, xmin=None, bottom=0.1, fit=True, save=Tru
             ax.set_xlabel('$-\log(\\text{%s})$'%xlabel)
             ax.set_ylabel('count')
             ax.set_title(' '.join(key) + f' - layer {layer}')# - ks {ksres.statistic:.3f} - avg. loglikelihood {loglikelihood:.3f}')
-            ax.annotate(f'loglikelihood (avg): {loglikelihood:.3f}', xy=(shape[0]**2*1, shape[1]*0.4), xycoords='figure pixels')
-            ax.annotate(f'ks statistic: {ksres.statistic:.3f}', xy=(shape[0]*52.5, shape[1]*0.4), xycoords='figure pixels')
+            ax.annotate(f'loglikelihood (avg): {loglikelihood:.3f}', xy=(shape[0]**2*0.7, shape[1]*0.7), xycoords='figure pixels')
+            ax.annotate(f'ks statistic: {ksres.statistic:.3f}', xy=(shape[0]*49, shape[1]*0.7), xycoords='figure pixels')
+            ax.xaxis.set_label_coords(0.5, -0.0867)
             if rect is not None:
                 ax.add_patch(rect)
             if ann is not None and ann_coord is not None:
@@ -157,7 +163,7 @@ def ks_ll_plot_w(params):
 
 
 # function to plot base ranges
-def plot2a(a, name=None, k=1, feat='he', stage='attention', axis=None, title="batches' maximums - %s", legend=True, batch_median=False, color=None, spec=None, all_feat=False):
+def plot2a(a, name=None, k=1, feat='he', stage='attention', axis=None, title="batches' maximums - %s", legend=True, batch_median=False, color=AREACOLOR, spec=None, all_feat=False):
     if a is not None and type(a) == dict:
         data = [(t, a[f'layers.malog_{t}']) for t in feat]
     else:
@@ -195,7 +201,7 @@ def plot2a(a, name=None, k=1, feat='he', stage='attention', axis=None, title="ba
                 zz.append(z)
             zz_min = min(min(z) for z in zz)
             zz_max = max(max(z) for z in zz)
-            ax.fill_between(np.arange(max(len(z) for z in zz)), zz_min, zz_max, label='base model\nactivations ratio\n(range)')
+            ax.fill_between(np.arange(max(len(z) for z in zz)), zz_min, zz_max, label='base model\nactivations ratio\n(range)', color=color)
             if legend:
                 ax.legend()
             if title is not None:
@@ -218,7 +224,7 @@ def plot2a(a, name=None, k=1, feat='he', stage='attention', axis=None, title="ba
 
 
 # function to plot trained model ratios
-def plot2(a, name=None, k=1, feat='he', stage='attention', axis=None, title="batches' maximums - %s", legend=True, batch_median=False, color=None, alpha=None, spec=None, all_feat=False, plot_threshold=True):
+def plot2(a, name=None, k=1, feat='he', stage='attention', axis=None, title="batches' maximums - %s", legend=True, batch_median=False, color=LINECOLOR, alpha=None, spec=None, all_feat=False, plot_threshold=True):
     if a is not None and type(a) == dict:
         data = [(t, a[f'layers.malog_{t}']) for t in feat]
     else:
