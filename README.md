@@ -1,6 +1,6 @@
 # Description
 
-Source code for the paper "Characterizing Massive Activations of Attention Mechanism in Graph Neural Networks".
+ Official repository implementation for "Characterizing Massive Activations of Attention Mechanism in Graph Neural Networks".
 
 This project analyzes behaviors of models taken from the following three repositories:
 - [graphdeeplearning/graphtransformer](https://github.com/graphdeeplearning/graphtransformer)
