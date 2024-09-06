@@ -1,6 +1,6 @@
 # Description
 
- Official repository implementation for "Characterizing Massive Activations of Attention Mechanism in Graph Neural Networks".
+Official repository implementation for ["Characterizing Massive Activations of Attention Mechanism in Graph Neural Networks"](https://arxiv.org/abs/2409.03463).
 
 This project analyzes behaviors of models taken from the following three repositories:
 - [graphdeeplearning/graphtransformer](https://github.com/graphdeeplearning/graphtransformer)
