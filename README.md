@@ -1,6 +1,6 @@
 # Description
 
-Official repository implementation for "[Massive Activations in Graph Neural \newline Networks: Decoding Attention for Domain-Dependent Interpretability](https://arxiv.org/abs/2409.03463)" published as a conference paper at ICLR 2025 Workshop [XAI4Science: From Understanding Model Behavior to Discovering New Scientific Knowledge](https://xai4science.github.io/).
+Official repository implementation for "[Massive Activations in Graph Neural Networks: Decoding Attention for Domain-Dependent Interpretability](https://arxiv.org/abs/2409.03463)" published as a conference paper at ICLR 2025 Workshop [XAI4Science: From Understanding Model Behavior to Discovering New Scientific Knowledge](https://xai4science.github.io/).
 
 This project analyzes behaviors of models taken from the following three repositories:
 - [graphdeeplearning/graphtransformer](https://github.com/graphdeeplearning/graphtransformer)
