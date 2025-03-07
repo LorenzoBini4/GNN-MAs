@@ -1,6 +1,6 @@
 # Description
 
-Official repository implementation for "[Characterizing Massive Activations of Attention Mechanism in Graph Neural Networks](https://arxiv.org/abs/2409.03463)".
+Official repository implementation for "[Massive Activations in Graph Neural \newline Networks: Decoding Attention for Domain-Dependent Interpretability](https://arxiv.org/abs/2409.03463)" published as a conference paper at ICLR 2025 Workshop [XAI4Science](https://xai4science.github.io/)..
 
 This project analyzes behaviors of models taken from the following three repositories:
 - [graphdeeplearning/graphtransformer](https://github.com/graphdeeplearning/graphtransformer)
