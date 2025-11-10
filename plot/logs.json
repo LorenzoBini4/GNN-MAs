@@ -1,0 +1,470 @@
+{
+    "malog": {
+        "GraphTransformer": {
+            "ZINC": {
+                "sparse": {
+                    "NoPE": {
+                        "BN": {
+                            "NoBias": {
+                                "Edge": {
+                                    "base": [
+                                    ],
+                                    "train": [
+                                    ]
+                                },
+                                "NoEdge": {
+                                    "train": [
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "full": {
+                    "NoPE": {
+                        "BN": {
+                            "NoBias": {
+                                "Edge": {
+                                    "train": [
+                                    ],
+                                    "base": [
+                                    ]
+                                },
+                                "NoEdge": {
+                                    "train": [
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "TOX21": {
+                "sparse": {
+                    "NoPE": {
+                        "BN": {
+                            "NoBias": {
+                                "Edge": {
+                                    "train": [
+                                    ],
+                                    "base": [
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "PROTEINS": {
+                "sparse": {
+                    "NoPE": {
+                        "BN": {
+                            "NoBias": {
+                                "Edge": {
+                                    "train": [
+                                    ],
+                                    "base": [
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "ZINC-GLOBAL": {
+                "sparse": {
+                    "NoPE": {
+                        "BN": {
+                            "NoBias": {
+                                "Edge": {
+                                    "train": [
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "GraphiT": {
+            "ZINC": {
+                "sparse": {
+                    "no_pe": {
+                        "BN": {
+                            "NoBias": {
+                                "Edge": {
+                                    "train": [
+                                    ],
+                                    "base": [
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "ogbg-moltox21": {
+                "sparse": {
+                    "no_pe": {
+                        "BN": {
+                            "NoBias": {
+                                "Edge": {
+                                    "train": [
+                                    ],
+                                    "base": [
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "PROTEINS": {
+                "sparse": {
+                    "NoPE": {
+                        "BN": {
+                            "NoBias": {
+                                "Edge": {
+                                    "train": [
+                                    ],
+                                    "base": [
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "SAN": {
+            "ZINC": {
+                "sparse": {
+                    "none": {
+                        "BN": {
+                            "NoBias": {
+                                "Edge": {
+                                    "train": [
+                                    ],
+                                    "base": [
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "ogbg-moltox21": {
+                "sparse": {
+                    "no_pe": {
+                        "BN": {
+                            "NoBias": {
+                                "Edge": {
+                                    "train": [
+                                    ],
+                                    "base": [
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "PROTEINS": {
+                "sparse": {
+                    "NoPE": {
+                        "BN": {
+                            "NoBias": {
+                                "Edge": {
+                                    "train": [
+                                    ],
+                                    "base": [
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "checkpoint": {
+        "GraphTransformer": {
+            "ZINC": {
+                "sparse": {
+                    "NoPE": {
+                        "BN": {
+                            "NoBias": {
+                                "Edge": {
+                                    "base": [
+                                    ],
+                                    "train": [
+                                    ]
+                                },
+                                "NoEdge": {
+                                    "train": [
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "full": {
+                    "NoPE": {
+                        "BN": {
+                            "NoBias": {
+                                "Edge": {
+                                    "train": [
+                                    ],
+                                    "base": [
+                                    ]
+                                },
+                                "NoEdge": {
+                                    "train": [
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "TOX21": {
+                "sparse": {
+                    "NoPE": {
+                        "BN": {
+                            "NoBias": {
+                                "Edge": {
+                                    "train": [
+                                    ],
+                                    "base": [
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "ZINC-GLOBAL": {
+                "sparse": {
+                    "NoPE": {
+                        "BN": {
+                            "NoBias": {
+                                "Edge": {
+                                    "train": [
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "GraphiT": {
+            "ZINC": {
+                "sparse": {
+                    "no_pe": {
+                        "BN": {
+                            "NoBias": {
+                                "Edge": {
+                                    "train": [
+                                    ],
+                                    "base": [
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "ogbg-moltox21": {
+                "sparse": {
+                    "no_pe": {
+                        "BN": {
+                            "NoBias": {
+                                "Edge": {
+                                    "train": [
+                                    ],
+                                    "base": [
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "SAN": {
+            "ZINC": {
+                "sparse": {
+                    "none": {
+                        "BN": {
+                            "NoBias": {
+                                "Edge": {
+                                    "train": [
+                                    ],
+                                    "base": [
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "ogbg-moltox21": {
+                "sparse": {
+                    "no_pe": {
+                        "BN": {
+                            "NoBias": {
+                                "Edge": {
+                                    "train": [
+                                    ],
+                                    "base": [
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "config": {
+        "GraphTransformer": {
+            "ZINC": {
+                "sparse": {
+                    "NoPE": {
+                        "BN": {
+                            "NoBias": {
+                                "Edge": {
+                                    "base": [
+                                    ],
+                                    "train": [
+                                    ]
+                                },
+                                "NoEdge": {
+                                    "train": [
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "full": {
+                    "NoPE": {
+                        "BN": {
+                            "NoBias": {
+                                "Edge": {
+                                    "train": [
+                                    ],
+                                    "base": [
+                                    ]
+                                },
+                                "NoEdge": {
+                                    "train": [
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "TOX21": {
+                "sparse": {
+                    "NoPE": {
+                        "BN": {
+                            "NoBias": {
+                                "Edge": {
+                                    "train": [
+                                    ],
+                                    "base": [
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "ZINC-GLOBAL": {
+                "sparse": {
+                    "NoPE": {
+                        "BN": {
+                            "NoBias": {
+                                "Edge": {
+                                    "train": [
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "GraphiT": {
+            "ZINC": {
+                "sparse": {
+                    "no_pe": {
+                        "BN": {
+                            "NoBias": {
+                                "Edge": {
+                                    "train": [
+                                    ],
+                                    "base": [
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "ogbg-moltox21": {
+                "sparse": {
+                    "no_pe": {
+                        "BN": {
+                            "NoBias": {
+                                "Edge": {
+                                    "train": [
+                                    ],
+                                    "base": [
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "SAN": {
+            "ZINC": {
+                "sparse": {
+                    "none": {
+                        "BN": {
+                            "NoBias": {
+                                "Edge": {
+                                    "train": [
+                                    ],
+                                    "base": [
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "ogbg-moltox21": {
+                "sparse": {
+                    "no_pe": {
+                        "BN": {
+                            "NoBias": {
+                                "Edge": {
+                                    "train": [
+                                    ],
+                                    "base": [
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

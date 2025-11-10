@@ -250,13 +250,18 @@ class MoleculeDataset(torch.utils.data.Dataset):
         print("[I] Loading dataset %s..." % (name))
         self.name = name
         data_dir = 'data/molecules/'
-        with open(data_dir+name+'.pkl',"rb") as f:
+        with open(data_dir+name.split('-',1)[0]+'.pkl',"rb") as f:
             f = pickle.load(f)
             self.train = f[0]
             self.val = f[1]
             self.test = f[2]
             self.num_atom_type = f[3]
             self.num_bond_type = f[4]
+        if name.upper().endswith('GLOBAL'):
+            for d in [self.train, self.val, self.test]:
+                for g,_ in d:
+                    g.edata['feat'] = torch.tensor(np.random.choice([1,2,3], g.edata['feat'].shape[0]), dtype=g.edata['feat'].dtype)
+
         print('train, test, val sizes :',len(self.train),len(self.test),len(self.val))
         print("[I] Finished loading.")
         print("[I] Data load time: {:.4f}s".format(time.time()-start))

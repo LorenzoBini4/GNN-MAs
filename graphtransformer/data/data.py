@@ -13,7 +13,8 @@ def LoadData(DATASET_NAME):
         ; dataset object
     """    
     # handling for (ZINC) molecule dataset
-    if DATASET_NAME == 'ZINC':
+    # if DATASET_NAME == 'ZINC':
+    if DATASET_NAME.upper().startswith('ZINC'):
         return MoleculeDataset(DATASET_NAME)
 
     # handling for SBM datasets

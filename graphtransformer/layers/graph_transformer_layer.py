@@ -81,7 +81,7 @@ class GraphTransformerLayer(nn.Module):
     """
         Param: 
     """
-    def __init__(self, in_dim, out_dim, num_heads, dropout=0.0, layer_norm=False, batch_norm=True, residual=True, use_bias=False, O_linear=True):
+    def __init__(self, in_dim, out_dim, num_heads, dropout=0.0, layer_norm=False, batch_norm=True, residual=True, use_bias=False, explicit_bias=False, edge_feat=False, O_linear=True):
         super().__init__()
 
         self.in_channels = in_dim
@@ -113,9 +113,10 @@ class GraphTransformerLayer(nn.Module):
         if self.batch_norm:
             self.batch_norm2 = nn.BatchNorm1d(out_dim)
         self.malog_h = []
+        self.malog_e = [] # added for compatibility
         self.malog = False
         
-    def forward(self, g, h):
+    def forward(self, g, h, e=None):
         if self.malog:
             malog_h = {}
         h_in1 = h # for first residual connection
@@ -159,7 +160,7 @@ class GraphTransformerLayer(nn.Module):
 
         if self.malog:
             self.malog_h.append(malog_h)
-        return h
+        return h, e
         
     def __repr__(self):
         return '{}(in_channels={}, out_channels={}, heads={}, residual={})'.format(self.__class__.__name__,

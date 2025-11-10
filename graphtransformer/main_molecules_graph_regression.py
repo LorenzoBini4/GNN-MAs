@@ -393,6 +393,7 @@ def main():
     parser.add_argument('--attack', type=int, help="position of sample to attack", default=-1)
     parser.add_argument('--explicit_bias', help="use explicit attention bias", default='False')
     parser.add_argument('--shared_noise', help="shared noise", default='False')
+    parser.add_argument('--description', help='any textual description, just added to the logs', default='')
     args = parser.parse_args()
     with open(args.config) as f:
         config = json.load(f)
@@ -441,6 +442,7 @@ def main():
     if args.shared_noise is not None:
         params['shared_noise'] = True if args.shared_noise=='True' else False
     params['attack'] = int(args.attack)
+    params['description'] = args.description
     # if args.weights is not None:
     params['weights'] = args.weights
     # network parameters
@@ -524,13 +526,45 @@ def main():
     model_out = train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs, train_bool=train_bool, weights=weights, epoch=epoch)
     data = {
         'layers.malog_h': [layer.malog_h for layer in model_out.layers],
-        'layers.malog_e': [layer.malog_e for layer in model_out.layers]
+        'layers.malog_e': [layer.malog_e for layer in model_out.layers],
+        'model.edge_types': model.edge_types
     }
     with open(os.path.join(root_log_dir, 'RUN_0', 'malog.pkl'),'wb') as outfile:
         pickle.dump(data, outfile)
 
     print('MA logs in', os.path.join(root_log_dir, 'RUN_0', 'malog.pkl'))
     print('checkpoints in', root_ckpt_dir)
+    
+    logs_json = config.get('logs_json', '../plot/logs.json')
+    with open(logs_json,'r') as fp:
+        chklogs = json.load(fp)
+    spec = [
+        MODEL_NAME, 
+        dataset.name, 
+        "full" if net_params["full_graph"] else "sparse",
+        "LapPE" if net_params["lap_pos_enc"] else "NoPE",
+        "BN" if net_params["batch_norm"] else "LN",
+        "ExplicitBias" if net_params["explicit_bias"] else "NoBias",
+        "Edge" if net_params["edge_feat"] else "NoEdge",
+        "base" if params["epochs"] == 0 else "train"
+    ]
+    for d,x in zip(
+        chklogs.values(),
+        [
+            os.path.join('..', 'graphtransformer', os.path.join(root_log_dir, 'RUN_0', 'malog.pkl')), 
+            os.path.join('..', 'graphtransformer', root_ckpt_dir),
+            str(config)
+        ]
+    ):
+        for sp in spec[:-1]:
+            if sp not in d:
+                d[sp] = {}
+            d = d[sp]
+        if spec[-1] not in d:
+            d[spec[-1]] = []
+        d[spec[-1]].append(x)
+    with open(logs_json,'w') as fp:
+        json.dump(chklogs, fp)
 
     
     
@@ -539,7 +573,7 @@ def main():
     
     
     
-main()    
+dataset = main()    
 
 
 

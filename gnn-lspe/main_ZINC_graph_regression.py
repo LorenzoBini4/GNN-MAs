@@ -428,7 +428,7 @@ def main():
     parser.add_argument('--hidden_dim', help="Please give a value for hidden_dim")
     parser.add_argument('--out_dim', help="Please give a value for out_dim")
     parser.add_argument('--residual', help="Please give a value for residual")
-    parser.add_argument('--edge_feat', help="Please give a value for edge_feat")
+    parser.add_argument('--edge_feat', help="Please give a value for edge_feat", default=True)
     parser.add_argument('--readout', help="Please give a value for readout")
     parser.add_argument('--in_feat_dropout', help="Please give a value for in_feat_dropout")
     parser.add_argument('--dropout', help="Please give a value for dropout")
@@ -581,7 +581,8 @@ def main():
         data = {
             'layers.malog_h': [layer.malog_h for layer in model_out.layers],
             # 'layers.malog_p': [layer.malog_p for layer in model_out.layers],
-            'layers.malog_e': [layer.malog_e for layer in model_out.layers]
+            'layers.malog_e': [layer.malog_e for layer in model_out.layers],
+            'model.edge_types': model.edge_types
         }
         with open(os.path.join(root_log_dir, 'RUN_0', 'malog.pkl'),'wb') as outfile:
             pickle.dump(data, outfile)
@@ -592,6 +593,38 @@ def main():
         pass
     print('MA logs in', os.path.join(root_log_dir, 'RUN_0', 'malog.pkl'))
     print('checkpoints in', root_ckpt_dir)
+    
+    logs_json = config.get('logs_json', '../plot/logs.json')
+    with open(logs_json,'r') as fp:
+        chklogs = json.load(fp)
+    spec = [
+        MODEL_NAME, 
+        dataset.name, 
+        "full" if net_params["full_graph"] else "sparse",
+        # "LapPE" if net_params["lap_pos_enc"] else "NoPE",
+        net_params['pe_init'],
+        "BN" if net_params["batch_norm"] else "LN",
+        "ExplicitBias" if net_params["explicit_bias"] else "NoBias",
+        "Edge" if net_params["edge_feat"] else "NoEdge",
+        "base" if params["epochs"] == 0 else "train"
+    ]
+    for d,x in zip(
+        chklogs.values(),
+        [
+            os.path.join('..', 'gnn-lspe', os.path.join(root_log_dir, 'RUN_0', 'malog.pkl')), 
+            os.path.join('..', 'gnn-lspe', root_ckpt_dir),
+            str(config)
+        ]
+    ):
+        for sp in spec[:-1]:
+            if sp not in d:
+                d[sp] = {}
+            d = d[sp]
+        if spec[-1] not in d:
+            d[spec[-1]] = []
+        d[spec[-1]].append(x)
+    with open(logs_json,'w') as fp:
+        json.dump(chklogs, fp)
 
     
     

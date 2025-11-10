@@ -10,7 +10,6 @@ import pickle
 import torch
 import numpy as np
 import scipy
-# from sklearn.preprocessing import MinMaxScaler
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -36,7 +35,7 @@ LINECOLOR = (81/255,40/255,136/255)
 
 
 
-def get_values(a, feat='e', stage='attention', use_layers=None, use_abs=True, flatten=True):
+def get_values(a, feat='e', stage='attention', use_layers=None, use_abs=True, flatten=True, cat_batches=True):
     if type(a) == dict:
         data = [(t, a[f'layers.malog_{t}']) for t in feat]
     else:
@@ -51,8 +50,6 @@ def get_values(a, feat='e', stage='attention', use_layers=None, use_abs=True, fl
             for i in use_layers:
                 ae = layers[i]
                 z = []
-                if use_layers is None:
-                    use_layers = range(len(ae))
                 for n in range(len(ae)):
                     x = ae[n][stage].detach()
                     d = reduce(mul, x.shape[1:], 1)
@@ -60,9 +57,10 @@ def get_values(a, feat='e', stage='attention', use_layers=None, use_abs=True, fl
                     if use_abs:
                         x = x.abs()
                     logs[i].append(x)
-                logs[i] = torch.cat(logs[i])
-                if flatten:
-                    logs[i] = logs[i].reshape(-1)
+                if cat_batches:
+                    logs[i] = torch.cat(logs[i])
+                    if flatten:
+                        logs[i] = logs[i].reshape(-1)
     return logs
 
 
@@ -84,12 +82,17 @@ def load_spec(spec):
 
 
 
-def ks_ll_plot(data_raw, key, layer=0, xmin=None, bottom=0.1, fit=True, save=True, dist=scipy.stats.gamma, dist_label='gamma', scale169=4.2, normalize=True, dir='gamma', xlabel='ratio', batch_median=False, rect=None, ann=None, ann_coord=None, dist_params_dict={}):
+def ks_ll_plot(data_raw, key, layer=0, xmin=None, bottom=0.1, fit=True, save=True, dist=scipy.stats.gamma, dist_label='gamma', scale169=4.2, normalize=True, dir='gamma', xlabel='ratio', batch_median=False, rect=None, ann=None, ann_coord=None, dist_params_dict=None, use_abs=True, logx=True, logy=True, threshold=True, legend='ratio histogram', lt=None, rt=None):
     res = {}
+    if dist_params_dict is None:
+        dist_params_dict = {}
     try:
         key_layer = tuple(key) + (layer,)
         print(f'start {key} {layer}\n', end='')
-        data = data_raw.abs().numpy()
+        if use_abs:
+            data = data_raw.abs().numpy()
+        else:
+            data = data_raw.numpy()
         if normalize:
             if batch_median:
                 med = np.median(data)
@@ -97,50 +100,65 @@ def ks_ll_plot(data_raw, key, layer=0, xmin=None, bottom=0.1, fit=True, save=Tru
                 med = np.median(data, axis=1).reshape(-1,1)
             data = data / med
         data = data.reshape(-1)
-        data = -np.log10(data+EPS)
+        if logx:
+            data = -np.log10(data+EPS)
         if xmin is not None:
             data = data[data>=xmin]
         # fit dist
         dist_params = dist_params_dict.get(key_layer)
-        # if fit:
-        if dist_params is None:
-            dist_params = dist.fit(data)
-            dist_params_dict[key_layer] = dist_params
-        # compute dist pdf
-        dist_x = np.concatenate([
-            np.linspace(dist_params[-2], data.min(), 100, endpoint=False),
-            np.linspace(data.min(), data.max(), 900)
-        ])
-        dist_pdf = dist.pdf(dist_x, *dist_params)
-        # compute data loglikelihood
-        loglikelihood = np.mean(dist.logpdf(data, *dist_params))
-        res['loglikelihood'] = loglikelihood
-        # compute Kolmogorov-Smirnov statisic
-        ksres = scipy.stats.kstest(data, lambda x:dist.cdf(x,*dist_params))
-        res['kstest'] = ksres
+        if dist is not None:
+            if dist_params is None:
+                dist_params = dist.fit(data)
+                dist_params_dict[key_layer] = dist_params
+            # compute dist pdf
+            dist_x = np.concatenate([
+                np.linspace(dist_params[-2], data.min(), 100, endpoint=False),
+                np.linspace(data.min(), data.max(), 900)
+            ])
+            dist_pdf = dist.pdf(dist_x, *dist_params)
+            # compute data loglikelihood
+            loglikelihood = np.mean(dist.logpdf(data, *dist_params))
+            res['loglikelihood'] = loglikelihood
+            # compute Kolmogorov-Smirnov statisic
+            ksres = scipy.stats.kstest(data, lambda x:dist.cdf(x,*dist_params))
+            res['kstest'] = ksres
         # plot
         k = len(data)*((data.max()-data.min())/1000)
-        dist_pdf = dist_pdf*k
-        pdf_mask = dist_pdf >= bottom/10
-        dist_x = dist_x[pdf_mask]
-        dist_pdf = dist_pdf[pdf_mask]
-        for shape_i, shape in enumerate([(1.6*scale169,0.9*scale169)]):#, (6,4.5)]):
+        if dist is not None:
+            dist_pdf = dist_pdf*k
+            pdf_mask = dist_pdf >= bottom/10
+            dist_x = dist_x[pdf_mask]
+            dist_pdf = dist_pdf[pdf_mask]
+        for shape_i, shape in enumerate([(1.6*scale169,0.9*scale169)]):
             fig, ax = plt.subplots(figsize=shape)
-            ax.set_yscale('log')
+            if logy:
+                ax.set_yscale('log')
+            data1 = data
             ax.hist(data, bins=1000, color=AREACOLOR)
-            ax.plot(dist_x, dist_pdf, color=LINECOLOR)
-            ax.axvline(x=-3, color='#000000', linestyle='dashed', label='MA threshold')
+            if lt is not None and rt is not None:
+                data1 = data1[(data1 <= lt) | (data1 >= rt)]
+                ax.hist(data1, bins=1000, color=LINECOLOR)
+            if dist is not None:
+                ax.plot(dist_x, dist_pdf, color=LINECOLOR)
+            if threshold:
+                ax.axvline(x=-3, color='#000000', linestyle='dashed', label='MA threshold')
             ax.set_ylim(bottom=bottom)
             ax.legend([
-                f'{dist_label} approximation pdf',
-                'relative threshold (1000)',
-                'ratio histogram'
-            ])
-            ax.set_xlabel('$-\log(\\text{%s})$'%xlabel)
+                f'{dist_label} approximation pdf'
+            ] if dist is not None else [] + [
+                'relative threshold (1000)'
+            ] if threshold else [] + [
+                # 'ratio histogram'
+                legend
+            ] + ([
+                'MAs'
+            ] if lt is not None and rt is not None else []))
+            ax.set_xlabel(xlabel)
             ax.set_ylabel('count')
-            ax.set_title(' '.join(key) + f' - layer {layer}')# - ks {ksres.statistic:.3f} - avg. loglikelihood {loglikelihood:.3f}')
-            ax.annotate(f'loglikelihood (avg): {loglikelihood:.3f}', xy=(shape[0]**2*0.7, shape[1]*0.7), xycoords='figure pixels')
-            ax.annotate(f'ks statistic: {ksres.statistic:.3f}', xy=(shape[0]*49, shape[1]*0.7), xycoords='figure pixels')
+            ax.set_title(' '.join(key))
+            if dist is not None:
+                ax.annotate(f'loglikelihood (avg): {loglikelihood:.3f}', xy=(shape[0]**2*0.7, shape[1]*0.7), xycoords='figure pixels')
+                ax.annotate(f'ks statistic: {ksres.statistic:.3f}', xy=(shape[0]*49, shape[1]*0.7), xycoords='figure pixels')
             ax.xaxis.set_label_coords(0.5, -0.0867)
             if rect is not None:
                 ax.add_patch(rect)
@@ -150,15 +168,17 @@ def ks_ll_plot(data_raw, key, layer=0, xmin=None, bottom=0.1, fit=True, save=Tru
                 name = '_'.join(list(key)+[str(layer)])
                 path = os.path.join('out', 'plots', dir, str(shape_i), *key)
                 pathlib.Path(path).mkdir(parents=True, exist_ok=True)
+                plt.tight_layout()
                 fig.savefig(os.path.join(path, f'{name}.png'))
-                fig.savefig(os.path.join(path, f'{name}.pdf'))
+                fig.savefig(os.path.join(path, f'{name}.pdf'), bbox_inches='tight', )
+                print(path)
     except Exception as e:
         print(f'ERROR: {key} {layer} {e}\n', end='')
     print(f'end {key} {layer}\n', end='')
     return (tuple(key) + (layer,), res)
 
 def ks_ll_plot_w(params):
-    return ks_ll_plot(*params)
+    return ks_ll_plot(*params, normalize=False)
 
 
 

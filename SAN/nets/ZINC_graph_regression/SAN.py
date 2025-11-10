@@ -48,6 +48,8 @@ class SAN(nn.Module):
         
         self.layers.append(GraphTransformerLayer(gamma, GT_hidden_dim, GT_out_dim, GT_n_heads, full_graph, dropout, self.layer_norm, self.batch_norm, self.residual, use_bias=self.use_bias, explicit_bias=self.explicit_bias))
         self.MLP_layer = MLPReadout(GT_out_dim, 1)   # 1 out dim since regression problem        
+        self.save_malogs = False
+        self.edge_types = []
         
         
     def forward(self, g, h, e):
@@ -55,6 +57,8 @@ class SAN(nn.Module):
         # input embedding
         h = self.embedding_h(h)
         h = self.in_feat_dropout(h)
+        if self.save_malogs:
+            self.edge_types.append(e.to('cpu'))
         e = self.embedding_e(e)        
         
         # GNN
@@ -80,6 +84,7 @@ class SAN(nn.Module):
         return loss
     
     def malog(self, malog:bool):
+        self.save_malogs = True
         for layer in self.layers:
             layer.malog = malog
 

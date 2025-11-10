@@ -635,6 +635,42 @@ def main():
     print('MA logs in', os.path.join(root_log_dir, 'RUN_0', 'malog.pkl'))
     print('checkpoints in', root_ckpt_dir)
 
+        
+    logs_json = config.get('logs_json', '../plot/logs.json')
+    with open(logs_json,'r') as fp:
+        chklogs = json.load(fp)
+    spec = [
+        MODEL_NAME, 
+        dataset.name, 
+        "full" if net_params["full_graph"] else "sparse",
+        # "LapPE" if net_params["lap_pos_enc"] else "NoPE",
+        net_params['pe_init'],
+        "BN" if net_params["batch_norm"] else "LN",
+        "ExplicitBias" if net_params["explicit_bias"] else "NoBias",
+        "Edge" if net_params.get("edge_feat",True) else "NoEdge",
+        "base" if params["epochs"] == 0 else "train"
+    ]
+    for d,x in zip(
+        chklogs.values(),
+        [
+            os.path.join('..', 'gnn-lspe', os.path.join(root_log_dir, 'RUN_0', 'malog.pkl')), 
+            os.path.join('..', 'gnn-lspe', root_ckpt_dir),
+            str(config)
+        ]
+    ):
+        for sp in spec[:-1]:
+            if sp not in d:
+                d[sp] = {}
+            d = d[sp]
+        if spec[-1] not in d:
+            d[spec[-1]] = []
+        d[spec[-1]].append(x)
+    with open(logs_json,'w') as fp:
+        json.dump(chklogs, fp)
+
+    
+    
+
     
     
     

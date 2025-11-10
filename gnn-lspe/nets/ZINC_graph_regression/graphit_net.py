@@ -86,6 +86,8 @@ class GraphiTNet(nn.Module):
         self.embedding_e_noise_dev = None
         self.embedding_h_log = None # used for attacking
         self.embedding_e_log = None # used for attacking
+        self.save_malogs = False
+        self.edge_types = []
         
     def norm(self, x):
         return x.std()
@@ -102,6 +104,8 @@ class GraphiTNet(nn.Module):
         self.embedding_h_log = h.cpu()
         if self.embedding_h_noise is not None:
             h = h + self.normalize(self.embedding_h_noise, self.embedding_h_noise_dev)
+        if self.save_malogs:
+            self.edge_types.append(e.to('cpu'))
         e = self.embedding_e(e)
         self.embedding_e_log = e.cpu()
         if self.embedding_e_noise is not None:
@@ -168,5 +172,6 @@ class GraphiTNet(nn.Module):
         return loss            
 
     def malog(self, malog:bool):
+        self.save_malogs = True
         for layer in self.layers:
             layer.malog = malog

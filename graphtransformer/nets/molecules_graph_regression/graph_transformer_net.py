@@ -9,6 +9,7 @@ import dgl
     
 """
 from layers.graph_transformer_edge_layer import GraphTransformerLayer
+from layers.graph_transformer_layer import GraphTransformerLayer as GraphTransformerNodeLayer
 from layers.mlp_readout_layer import MLPReadout
 
 from egat import EGATConv
@@ -40,7 +41,7 @@ class GraphTransformerNet(nn.Module):
         self.gat = net_params['gat']
         self.dataset_name = net_params['dataset_name']
         self.hidden_dim = hidden_dim
-        self.O_linear = net_params['O_linear']
+        self.O_linear = net_params.get('O_linear',True)
         max_wl_role_index = 37 # this is maximum graph size in the dataset
         
         if self.lap_pos_enc:
@@ -54,15 +55,17 @@ class GraphTransformerNet(nn.Module):
 
         if self.edge_feat:
             self.embedding_e = nn.Embedding(num_bond_type, embed_dim[1])
+            Layer = GraphTransformerLayer
         else:
             self.embedding_e = nn.Linear(1, hidden_dim)
+            Layer = GraphTransformerNodeLayer
         
         self.in_feat_dropout = nn.Dropout(in_feat_dropout)
         
         if not self.gat:
-            self.layers = nn.ModuleList([ GraphTransformerLayer(hidden_dim, hidden_dim, num_heads, dropout,
+            self.layers = nn.ModuleList([ Layer(hidden_dim, hidden_dim, num_heads, dropout,
                                                         self.layer_norm, self.batch_norm, self.residual, use_bias=self.use_bias, explicit_bias=self.explicit_bias, edge_feat=self.edge_feat, O_linear=self.O_linear) for _ in range(n_layers-1) ]) 
-            self.layers.append(GraphTransformerLayer(hidden_dim, out_dim, num_heads, dropout, self.layer_norm, self.batch_norm, self.residual, use_bias=self.use_bias, explicit_bias=self.explicit_bias, edge_feat=self.edge_feat, O_linear=self.O_linear))
+            self.layers.append(Layer(hidden_dim, out_dim, num_heads, dropout, self.layer_norm, self.batch_norm, self.residual, use_bias=self.use_bias, explicit_bias=self.explicit_bias, edge_feat=self.edge_feat, O_linear=self.O_linear))
         else:
             self.layers = nn.ModuleList([
                 EGATConv(
@@ -81,6 +84,8 @@ class GraphTransformerNet(nn.Module):
         self.embedding_e_noise_dev = None
         self.embedding_h_log = None # used for attacking
         self.embedding_e_log = None # used for attacking
+        self.save_malogs = False
+        self.edge_types = []
         
     def norm(self, x):
         return x.std()
@@ -106,8 +111,10 @@ class GraphTransformerNet(nn.Module):
             h = h + h_wl_pos_enc
         if not self.edge_feat: # edge feature set to 1
             e = torch.ones(e.size(0),1).to(self.device)
-        else: # NOTE: added to ignore edges
-            e = self.embedding_e(e)   
+        # else: # NOTE: added to ignore edges
+        if self.save_malogs:
+            self.edge_types.append(e.to('cpu'))
+        e = self.embedding_e(e)   
         e = e.view(-1, self.hidden_dim)
         self.embedding_e_log = e.cpu()
         if self.embedding_e_noise is not None:
@@ -145,5 +152,6 @@ class GraphTransformerNet(nn.Module):
         return loss
     
     def malog(self, malog:bool):
+        self.save_malogs = True
         for layer in self.layers:
             layer.malog = malog
