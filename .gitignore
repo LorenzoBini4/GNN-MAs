@@ -1,0 +1,21 @@
+.dgl/
+__pycache__/
+*.pyc
+*.pyo
+*.pkl
+
+# local datasets / cache
+dataset_cache/
+
+# run artifacts and logs
+*.out
+*.err
+*.log
+out/
+pyg/out/
+graphtransformer/out/
+SAN/out/
+gnn-lspe/out/
+
+# notebook checkpoints
+.ipynb_checkpoints/

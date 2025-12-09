@@ -1,0 +1,30 @@
+{
+  "dataset": "Squirrel",
+  "model": "GAT",
+  "out_dir": "pyg/out/Squirrel/",
+  "raw_dir": "dataset_cache",
+  "gpu": {
+    "use": true,
+    "id": 0
+  },
+  "params": {
+    "seed": 41,
+    "epochs": 2000,
+    "init_lr": 0.005,
+    "lr_reduce_factor": 0.5,
+    "lr_schedule_patience": 50,
+    "min_lr": 1e-5,
+    "weight_decay": 0.0005,
+    "print_epoch_interval": 10,
+    "max_time": 24
+  },
+  "net_params": {
+    "hidden_dim": 64,
+    "n_layers": 3,
+    "n_heads": 4,
+    "dropout": 0.6,
+    "attn_dropout": 0.6,
+    "residual": true,
+    "split": 0
+  }
+}

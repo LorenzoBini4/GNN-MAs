@@ -13,6 +13,8 @@ This project analyzes behaviors of models taken from the following three reposit
 which can be found in the directories [graphtransformer](./graphtransformer), [SAN](./SAN), and [gnn-lspe](./gnn-lspe), with due modifications.\
 Some code is integrated from [labstructbioinf/EdgeGat](https://github.com/labstructbioinf/EdgeGat).
 
+Additionally, a PyTorch Geometric (PyG) GAT pipeline is provided in [pyg](./pyg) to mirror the Massive Activations logging on DGL node-feature datasets (Chameleon, Squirrel, MUTAG).
+
 
 <br>
 
@@ -32,12 +34,14 @@ The model/dataset configurations are assigned to the three repositories in the f
 - graphtransformer: GT with ZINC and TOX21
 - SAN: SAN with ZINC
 - gnn-lspe: all the others (GT with PROTEINS, SAN with TOX21 and PROTEINS, GraphiT)
+- pyg: PyG GAT with Chameleon, Squirrel, MUTAG (node classification)
 
 When running an experiments, two paths will be printed by the program just before exiting:
 - MA logs: logfile containing activation values, to be used for [plots](./plot), it is suggested to store the paths in [plot/logs.json](./plot/logs.json) to use them for generating plots
 - checkpoints: directory containing the trained model's weights, to be used for further testing or attacks.
 
 Commands to run experiments can be found in [graphtransformer/scripts](./graphtransformer/scripts), [SAN/scripts](./SAN/scripts), and [gnn-lspe/scripts](./gnn-lspe/scripts).\
+PyG GAT scripts are under [pyg/scripts/train](./pyg/scripts/train) (e.g., `bash scripts/train/gat_chameleon.sh` from inside `pyg`).
 Such commands should be run from the repository's main directory (i.e., [graphtransformer](./graphtransformer), [SAN](./SAN), or [gnn-lspe](./gnn-lspe))
 
 
