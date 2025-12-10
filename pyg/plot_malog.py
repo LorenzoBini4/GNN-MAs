@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torch
 
+EPS = 1e-12
+
 def _local_get_values(a, feat="h", stage="attention", use_layers=None, use_abs=True, flatten=True, cat_batches=True):
     # copy of plot/utils.get_values without the logs.json dependency.
     if isinstance(a, dict):
@@ -58,14 +60,18 @@ def plot_malog(malog_path: Path, out_dir: Path, include_edges: bool):
     node_values = _local_get_values(malog, feat="h", stage="attention", use_abs=True, flatten=True, cat_batches=True)
     for layer_idx, tensor in node_values.items():
         values = tensor.cpu().numpy().reshape(-1)
-        _hist_layer(values, f"Layer {layer_idx} node attention", out_dir / f"layer{layer_idx}_node.png")
+        med = np.median(values) if values.size > 0 else 1.0
+        values = values / (med + EPS)
+        _hist_layer(values, f"Layer {layer_idx} node attention (normalized by median)", out_dir / f"layer{layer_idx}_node.png")
 
     # Edge activations (if any)
     if include_edges and malog.get("layers.malog_e") is not None:
         edge_values = _local_get_values(malog, feat="e", stage="attention", use_abs=True, flatten=True, cat_batches=True)
         for layer_idx, tensor in edge_values.items():
             values = tensor.cpu().numpy().reshape(-1)
-            _hist_layer(values, f"Layer {layer_idx} edge attention", out_dir / f"layer{layer_idx}_edge.png")
+            med = np.median(values) if values.size > 0 else 1.0
+            values = values / (med + EPS)
+            _hist_layer(values, f"Layer {layer_idx} edge attention (normalized by median)", out_dir / f"layer{layer_idx}_edge.png")
 
 def main():
     parser = argparse.ArgumentParser(description="Plot MA histograms from malog.pkl produced by PyG GAT")

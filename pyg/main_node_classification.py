@@ -167,7 +167,6 @@ TEST ACCURACY: {test_acc:.4f}
         _ = model(data)
     log_payload = {
         "layers.malog_h": [layer.malog_h for layer in model.layers],
-        "layers.malog_e": [layer.malog_e for layer in model.layers],
     }
     os.makedirs(os.path.join(root_log_dir, "RUN_0"), exist_ok=True)
     with open(os.path.join(root_log_dir, "RUN_0", "malog.pkl"), "wb") as outfile:

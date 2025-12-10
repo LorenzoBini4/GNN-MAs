@@ -69,4 +69,3 @@ class GATNet(nn.Module):
         for layer in self.layers:
             layer.malog = enable
             layer.malog_h = []
-            layer.malog_e = []

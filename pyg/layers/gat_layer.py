@@ -44,7 +44,6 @@ class GATLayer(MessagePassing):
 
         self.malog = False
         self.malog_h = []
-        self.malog_e = []
 
     def reset_parameters(self):
         nn.init.xavier_normal_(self.lin.weight)
@@ -61,7 +60,8 @@ class GATLayer(MessagePassing):
 
         alpha_logits = self.leaky_relu(alpha_src[edge_index[0]] + alpha_dst[edge_index[1]])
         if self.malog:
-            self.malog_e.append({"attention": alpha_logits.detach().cpu()})
+            # Log node-derived attention logits (pre-softmax) after nonlinearity.
+            self.malog_h.append({"attention": alpha_logits.detach().cpu()})
 
         alpha = softmax(alpha_logits, edge_index[1], num_nodes=x_proj.size(0))
         alpha = F.dropout(alpha, p=self.attn_dropout, training=self.training)
@@ -78,8 +78,6 @@ class GATLayer(MessagePassing):
             res = x if self.res_proj is None else self.res_proj(x)
             out = out + res
 
-        if self.malog:
-            self.malog_h.append({"attention": out.detach().cpu()})
         return out
 
     def message(self, x_j: torch.Tensor, alpha: torch.Tensor):
